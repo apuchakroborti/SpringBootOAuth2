@@ -29,16 +29,16 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 			<!--for wildfly deployment this exclusion must be added -->
-		<!--	<exclusions>
+			<exclusions>
 				<exclusion>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-starter-tomcat</artifactId>
 				</exclusion>
-				&lt;!&ndash;<exclusion>
+				<!--<exclusion>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-starter-logging</artifactId>
-				</exclusion>&ndash;&gt;
-			</exclusions>-->
+				</exclusion>-->
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -48,11 +48,11 @@
 		</dependency>
 
 		<!--for wildfly server deployment comment out-->
-		<dependency>
+		<!--<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<scope>provided</scope>
-		</dependency>
+		</dependency>-->
 
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
@@ -84,11 +84,11 @@
 		</dependency>
 
 		<!--for wildfly server deployment comment out-->
-		<dependency>
+		<!--<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-jasper</artifactId>
 			<scope>provided</scope>
-		</dependency>
+		</dependency>-->
 
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -104,11 +104,11 @@
 		</dependency>
 
 		<!--for wildfly server this must me added-->
-		<!--<dependency>
+		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<scope>provided</scope>
-		</dependency>-->
+		</dependency>
 	</dependencies>
 
 	<build>
