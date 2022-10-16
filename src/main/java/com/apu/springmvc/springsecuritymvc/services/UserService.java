@@ -1,10 +1,10 @@
 package com.apu.springmvc.springsecuritymvc.services;
 
 
-import com.apu.springmvc.springsecuritymvc.dto.User;
+import com.apu.springmvc.springsecuritymvc.models.UserBean;
 
 public interface UserService {
-    void save(User user);
+    void save(UserBean user);
 
-    User findByUsername(String username);
+    UserBean findByUsername(String username);
 }

@@ -2,7 +2,7 @@ package com.apu.springmvc.springsecuritymvc.webcontroller;
 
 
 import com.apu.springmvc.springsecuritymvc.business.GetPostRequestHandler;
-import com.apu.springmvc.springsecuritymvc.dto.User;
+import com.apu.springmvc.springsecuritymvc.models.UserBean;
 import com.apu.springmvc.springsecuritymvc.services.SecurityService;
 import com.apu.springmvc.springsecuritymvc.services.UserService;
 import com.apu.springmvc.springsecuritymvc.validator.UserValidator;
@@ -28,13 +28,13 @@ public class UserController {
 
     @GetMapping("/registration")
     public String registration(Model model) {
-        model.addAttribute("userForm", new User());
+        model.addAttribute("userForm", new UserBean());
 
         return "registration";
     }
 
     @PostMapping("/registration")
-    public String registration(@ModelAttribute("userForm") User userForm, BindingResult bindingResult, ModelMap model) {
+    public String registration(@ModelAttribute("userForm") UserBean userForm, BindingResult bindingResult, ModelMap model) {
         userValidator.validate(userForm, bindingResult);
 
         if (bindingResult.hasErrors()) {

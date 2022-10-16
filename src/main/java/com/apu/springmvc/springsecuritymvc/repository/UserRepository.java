@@ -1,9 +1,11 @@
 package com.apu.springmvc.springsecuritymvc.repository;
 
 
-import com.apu.springmvc.springsecuritymvc.dto.User;
+import com.apu.springmvc.springsecuritymvc.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     User findByUsername(String username);
 }
