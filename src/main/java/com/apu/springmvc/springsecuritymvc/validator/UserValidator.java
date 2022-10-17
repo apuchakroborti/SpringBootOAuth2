@@ -1,8 +1,11 @@
 package com.apu.springmvc.springsecuritymvc.validator;
 
 
+import com.apu.springmvc.springsecuritymvc.exceptions.GenericException;
 import com.apu.springmvc.springsecuritymvc.models.UserBean;
 import com.apu.springmvc.springsecuritymvc.services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -11,6 +14,8 @@ import org.springframework.validation.Validator;
 
 @Component
 public class UserValidator implements Validator {
+    private static final Logger logger= LoggerFactory.getLogger(UserValidator.class);
+
     @Autowired
     private UserService userService;
 
@@ -27,7 +32,14 @@ public class UserValidator implements Validator {
         if (userBean.getUsername().length() < 6 || userBean.getUsername().length() > 32) {
             errors.rejectValue("username", "Size.userForm.username");
         }
-        if (userService.findByUsername(userBean.getUsername()) != null) {
+        UserBean checkExistingUser = null;
+        try{
+            checkExistingUser = userService.findByUsername(userBean.getUsername());
+        }catch (GenericException e){
+            logger.error("Exception occurred while fetching user by username: {}", userBean.getUsername());
+            e.printStackTrace();
+        }
+        if ( checkExistingUser!= null) {
             errors.rejectValue("username", "Duplicate.userForm.username");
         }
 

@@ -8,7 +8,7 @@ INSERT INTO studentdb.ROLES(ROLE_NAME, STATUS, DESCRIPTION, created_by, create_t
 Insert The initial user:
 INSERT INTO studentdb.users(
 	first_name, last_name, username, email, password, user_role_id, status, created_by, create_time, updated_by, updated_time, internal_version)
-	VALUES ('Admin', 'Admin', 'admin@gmail.com', 'admin@gmail.com','admin123', 1, 1, 0, CURRENT_TIMESTAMP , null, null, 1);
+	VALUES ('Admin', 'Admin', 'admin@gmail.com', 'admin@gmail.com','admin123=$2a$10$qhGR8Wq9UPTUnwA3ysBJNOfz1hIIQuOlKfMZw0c8zfs6KvHdAwryG', 1, 1, 0, CURRENT_TIMESTAMP , null, null, 1);
 
 Note: here the password must be encrypted
 

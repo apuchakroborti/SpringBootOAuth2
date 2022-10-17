@@ -1,11 +1,14 @@
-package com.apu.springmvc.springsecuritymvc.webcontroller;
+package com.apu.springmvc.springsecuritymvc.client.webcontroller;
 
 
-import com.apu.springmvc.springsecuritymvc.business.GetPostRequestHandler;
+import com.apu.springmvc.springsecuritymvc.client.business.GetPostRequestHandler;
+import com.apu.springmvc.springsecuritymvc.exceptions.GenericException;
 import com.apu.springmvc.springsecuritymvc.models.UserBean;
 import com.apu.springmvc.springsecuritymvc.services.SecurityService;
 import com.apu.springmvc.springsecuritymvc.services.UserService;
 import com.apu.springmvc.springsecuritymvc.validator.UserValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,7 +19,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
-public class UserController {
+public class FrontendUserController {
+
+    private static final Logger logger = LoggerFactory.getLogger(FrontendUserController.class);
+
     @Autowired
     private UserService userService;
 
@@ -40,8 +46,11 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             return "registration";
         }
-
-        userService.save(userForm);
+        try {
+            userService.save(userForm);
+        }catch (GenericException e){
+            logger.error("Exception occurred while creating user!");
+        }
 
         securityService.autoLogin(userForm.getUsername(), userForm.getPasswordConfirm());
 

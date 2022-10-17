@@ -1,4 +1,4 @@
-package com.apu.springmvc.springsecuritymvc.business;
+package com.apu.springmvc.springsecuritymvc.client.business;
 
 import com.apu.springmvc.springsecuritymvc.models.AuthenticationRequest;
 import com.apu.springmvc.springsecuritymvc.models.AuthenticationResponse;
@@ -7,7 +7,6 @@ import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 

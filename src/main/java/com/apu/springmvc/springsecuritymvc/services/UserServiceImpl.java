@@ -2,12 +2,21 @@ package com.apu.springmvc.springsecuritymvc.services;
 
 
 import com.apu.springmvc.springsecuritymvc.entity.User;
+import com.apu.springmvc.springsecuritymvc.exceptions.GenericException;
 import com.apu.springmvc.springsecuritymvc.models.UserBean;
+import com.apu.springmvc.springsecuritymvc.models.UserSearchCriteria;
 import com.apu.springmvc.springsecuritymvc.repository.RoleRepository;
 import com.apu.springmvc.springsecuritymvc.repository.UserRepository;
+import com.apu.springmvc.springsecuritymvc.specifications.UserSearchSpecifications;
+import com.apu.springmvc.springsecuritymvc.util.Defs;
+import com.apu.springmvc.springsecuritymvc.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Pageable;
+import java.util.Optional;
 
 
 @Service
@@ -20,68 +29,70 @@ public class UserServiceImpl implements UserService {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
-    public void save(UserBean userBean) {
+    public UserBean save(UserBean userBean) throws GenericException {
         //TODO need to use model mapper for copying value from bean to entity
-        User user = this.getUserEntity(userBean);
+        User user = new User();
+        Utils.copyProperty(userBean, user);
 
         user.setPassword(bCryptPasswordEncoder.encode(userBean.getPassword()));
+        System.out.println("encrypted Password: "+bCryptPasswordEncoder.encode(userBean.getPassword()));
         user.setUserRoleId(1L);
         user.setStatus(true);
 
-        userRepository.save(user);
+        user = userRepository.save(user);
+        Utils.copyProperty(user, userBean);
+
+        return userBean;
     }
 
     @Override
-    public UserBean findByUsername(String username) {
+    public UserBean findByUsername(String username) throws GenericException{
 
         User user = userRepository.findByUsername(username);
         if(user==null)return null;
-        return this.getUserBean(user);
-    }
-
-    private User getUserEntity(UserBean userBean){
-        User user = new User();
-
-        if(userBean.getFirstName()!=null){
-            user.setFirstName(userBean.getFirstName());
-        }
-        if(userBean.getLastName()!=null){
-            user.setLastName(userBean.getLastName());
-        }
-        user.setUsername(userBean.getUsername()!=null?userBean.getUsername():null);
-        user.setEmail(userBean.getEmail()!=null?userBean.getEmail(): null);
-//        user.setUserRoleId(userBean.getUserRoleId());
-        user.setPhone(userBean.getPhone()!=null?userBean.getPhone():null);
-        if(userBean.getDateOfBirth()!=null){
-            user.setDateOfBirth(userBean.getDateOfBirth());
-        }
-        user.setAddressId(userBean.getAddressId()!=null?userBean.getAddressId():null);
-        user.setStatus(userBean.getStatus()!=null?userBean.getStatus():null);
-        return user;
-    }
-    private UserBean getUserBean(User user){
         UserBean userBean = new UserBean();
-
-        if(user.getFirstName()!=null){
-            userBean.setFirstName(user.getFirstName());
-        }
-        if(user.getLastName()!=null){
-            userBean.setLastName(user.getLastName());
-        }
-        if(user.getUsername()!=null){
-            userBean.setUsername(user.getUsername());
-        }
-        if(user.getEmail()!=null){
-            userBean.setEmail(user.getEmail());
-        }
-        if(user.getPhone()!=null){
-            userBean.setPhone(user.getPhone());
-        }
-        if(user.getDateOfBirth()!=null){
-            userBean.setDateOfBirth(user.getDateOfBirth());
-        }
-//        userBean.setAddressId(user.getAddressId());
-//        userBean.setStatus(user.getStatus());
+        Utils.copyProperty(user, userBean);
         return userBean;
     }
+    @Override
+    public UserBean findUserById(Long id) throws GenericException{
+        Optional<User> optionalUser = userRepository.findById(id);
+
+        if(optionalUser.isPresent()){
+            UserBean userBean = new UserBean();
+            Utils.copyProperty(optionalUser.get(), userBean);
+            return userBean;
+        }
+        throw new GenericException(Defs.USER_NOT_FOUND);
+    }
+
+    @Override
+    public UserBean updateUserById(Long id, UserBean userBean) throws GenericException{
+        Optional<User> optionalUser = userRepository.findById(id);
+        if(!optionalUser.isPresent()) throw new GenericException(Defs.USER_NOT_FOUND);
+        return null;
+    }
+
+    @Override
+    public Page<User> getUserList(UserSearchCriteria criteria, @PageableDefault(value = 10)Pageable pageable) throws GenericException{
+        Page<User> userPage = userRepository.findAll(
+                UserSearchSpecifications.withId(criteria.getId())
+                .and(UserSearchSpecifications.withFirstName(criteria.getFirstName()))
+                .and(UserSearchSpecifications.withLastName(criteria.getLastName()))
+                .and(UserSearchSpecifications.withUsername(criteria.getUsername()))
+                .and(UserSearchSpecifications.withEmail(criteria.getEmail()))
+                .and(UserSearchSpecifications.withPhone(criteria.getPhone()))
+                ,pageable
+        );
+        return null;
+    }
+
+    @Override
+    public Boolean deleteUserById(Long id) throws GenericException{
+        Optional<User> optionalUser = userRepository.findById(id);
+        if(!optionalUser.isPresent()) throw new GenericException(Defs.USER_NOT_FOUND);
+
+        return true;
+    }
+
 }
