@@ -2,7 +2,7 @@ package com.apu.springmvc.springsecuritymvc.controllers;
 
 import com.apu.springmvc.springsecuritymvc.exceptions.GenericException;
 import com.apu.springmvc.springsecuritymvc.models.ServiceResponse;
-import com.apu.springmvc.springsecuritymvc.models.UserBean;
+import com.apu.springmvc.springsecuritymvc.models.EmployeeBean;
 import com.apu.springmvc.springsecuritymvc.models.UserSearchCriteria;
 import com.apu.springmvc.springsecuritymvc.services.UserService;
 import com.apu.springmvc.springsecuritymvc.util.Utils;
@@ -23,13 +23,13 @@ public class UserServiceController {
     }
 
     @PostMapping
-    public ServiceResponse saveUser(UserBean userBean) throws GenericException {
-        return new ServiceResponse(null, userService.save(userBean));
+    public ServiceResponse saveUser(EmployeeBean employeeBean) throws GenericException {
+        return new ServiceResponse(null, userService.save(employeeBean));
     }
 
     @GetMapping()
     public ServiceResponse getUserList(UserSearchCriteria criteria, @PageableDefault(value = 10) Pageable pageable) throws GenericException {
-        return Utils.pageToServiceResponse(userService.getUserList(criteria, pageable), UserBean.class);
+        return Utils.pageToServiceResponse(userService.getUserList(criteria, pageable), EmployeeBean.class);
     }
 
     @GetMapping(path = "/{id}")
@@ -38,8 +38,8 @@ public class UserServiceController {
     }
 
     @PutMapping("/{id}")
-    public ServiceResponse updateUserById(@PathVariable(name = "id") Long id, UserBean userBean) throws GenericException {
-        return new ServiceResponse(null, userService.updateUserById(id, userBean));
+    public ServiceResponse updateUserById(@PathVariable(name = "id") Long id, EmployeeBean employeeBean) throws GenericException {
+        return new ServiceResponse(null, userService.updateUserById(id, employeeBean));
     }
 
     @DeleteMapping("/{id}")

@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-public class UserBean implements Serializable {
+public class EmployeeBean implements Serializable {
     private Long id;
 
     private String firstName;

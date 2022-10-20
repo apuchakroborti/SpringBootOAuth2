@@ -5,16 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
-/*@SpringBootApplication
-public class SpringSecurityMvcApplication {
-
-	public static void main(String[] args) {
-		SpringApplication.run(SpringSecurityMvcApplication.class, args);
-	}
-
-}*/
-
-//for wildfly server
 @SpringBootApplication
 public class SpringSecurityMvcApplication extends SpringBootServletInitializer {
 
