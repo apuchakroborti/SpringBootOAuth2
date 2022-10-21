@@ -1,5 +1,6 @@
 package com.apu.springmvc.springsecuritymvc.entity;
 
+import com.apu.springmvc.springsecuritymvc.models.security.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,12 +14,15 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users")
-public class User extends EntityCommon{
+@Table(name = "custom_users")
+public class CustomUser extends EntityCommon{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "user_id", nullable = false)
+    private String userId;
 
     @Column(name = "first_name",nullable = false, length = 50)
     private String firstName;
@@ -26,18 +30,8 @@ public class User extends EntityCommon{
     @Column(name = "last_name",nullable = false, length = 50)
     private String lastName;
 
-    @Column(name = "username",nullable = false, length = 120, unique = true)
-    private String username;
-
     @Column(name = "email",nullable = false, length = 120, unique = true)
     private String email;
-
-    @Column(name = "password",nullable = false)
-    private String password;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_role_id", nullable = false)
-    private Role role;
 
     @Column(name = "phone")
     private String phone;
@@ -49,4 +43,7 @@ public class User extends EntityCommon{
     private Integer addressId;
 
     private Boolean status;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private User oauthUser;
 }

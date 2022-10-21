@@ -27,11 +27,13 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 
     @Override
     public void configure(ResourceServerSecurityConfigurer resources) {
+        System.out.println("resources called");
         resources.resourceId(RESOURCE_ID);
     }
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
+        System.out.println("http called");
 //        http.cors().and();
         http.csrf().disable().requestMatchers()
                 .antMatchers(SECURED_PATTERN).and().authorizeRequests()

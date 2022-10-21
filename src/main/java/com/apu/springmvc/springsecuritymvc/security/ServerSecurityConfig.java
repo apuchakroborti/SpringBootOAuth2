@@ -30,16 +30,19 @@ public class ServerSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
+        System.out.println("Bean  authenticationManagerBean called");
         return super.authenticationManagerBean();
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        System.out.println("configure auth called");
         auth.userDetailsService(userDetailService).passwordEncoder(userPasswordEncoder);
     }
 
     @Bean
     public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
+        System.out.println("configure securityEvaluationContextExtension called");
         return new SecurityEvaluationContextExtension();
     }
 }

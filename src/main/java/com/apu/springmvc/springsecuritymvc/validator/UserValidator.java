@@ -2,8 +2,8 @@ package com.apu.springmvc.springsecuritymvc.validator;
 
 
 import com.apu.springmvc.springsecuritymvc.exceptions.GenericException;
-import com.apu.springmvc.springsecuritymvc.models.EmployeeBean;
-import com.apu.springmvc.springsecuritymvc.services.UserService;
+import com.apu.springmvc.springsecuritymvc.models.CustomUserDto;
+import com.apu.springmvc.springsecuritymvc.services.CustomUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,26 +17,26 @@ public class UserValidator implements Validator {
     private static final Logger logger= LoggerFactory.getLogger(UserValidator.class);
 
     @Autowired
-    private UserService userService;
+    private CustomUserService customUserService;
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return EmployeeBean.class.equals(aClass);
+        return CustomUserDto.class.equals(aClass);
     }
 
     @Override
     public void validate(Object o, Errors errors) {
-        EmployeeBean employeeBean = (EmployeeBean) o;
+        CustomUserDto customUserDto = (CustomUserDto) o;
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "NotEmpty");
-        if (employeeBean.getUsername().length() < 6 || employeeBean.getUsername().length() > 32) {
+        if (customUserDto.getUsername().length() < 6 || customUserDto.getUsername().length() > 32) {
             errors.rejectValue("username", "Size.userForm.username");
         }
-        EmployeeBean checkExistingUser = null;
+        CustomUserDto checkExistingUser = null;
         try{
-            checkExistingUser = userService.findByUsername(employeeBean.getUsername());
+            checkExistingUser = customUserService.findByUsername(customUserDto.getUsername());
         }catch (GenericException e){
-            logger.error("Exception occurred while fetching user by username: {}", employeeBean.getUsername());
+            logger.error("Exception occurred while fetching user by username: {}", customUserDto.getUsername());
             e.printStackTrace();
         }
         if ( checkExistingUser!= null) {
@@ -44,11 +44,11 @@ public class UserValidator implements Validator {
         }
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty");
-        if (employeeBean.getPassword().length() < 8 || employeeBean.getPassword().length() > 32) {
+        if (customUserDto.getPassword().length() < 8 || customUserDto.getPassword().length() > 32) {
             errors.rejectValue("password", "Size.userForm.password");
         }
 
-        if (!employeeBean.getPasswordConfirm().equals(employeeBean.getPassword())) {
+        if (!customUserDto.getPassword().equals(customUserDto.getPassword())) {
             errors.rejectValue("passwordConfirm", "Diff.userForm.passwordConfirm");
         }
     }
