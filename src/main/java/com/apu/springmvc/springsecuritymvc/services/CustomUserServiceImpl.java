@@ -81,7 +81,7 @@ public class CustomUserServiceImpl implements CustomUserService{
     public CustomUserDto findByUsername(String username) throws GenericException{
 
         CustomUser user = customUserRepository.findByEmail(username);
-        if(user==null)return null;
+        if(user==null || user.getStatus().equals(false))return null;
         CustomUserDto customUserDto = new CustomUserDto();
         Utils.copyProperty(user, customUserDto);
         return customUserDto;
@@ -90,40 +90,77 @@ public class CustomUserServiceImpl implements CustomUserService{
     public CustomUserDto findUserById(Long id) throws GenericException{
         Optional<CustomUser> optionalUser = customUserRepository.findById(id);
 
-        if(optionalUser.isPresent()){
+        if(!optionalUser.isPresent() || optionalUser.get().getStatus().equals(false)){
+            throw new GenericException(Defs.USER_NOT_FOUND);
+        }else{
             CustomUserDto employeeBean = new CustomUserDto();
             Utils.copyProperty(optionalUser.get(), employeeBean);
             return employeeBean;
         }
-        throw new GenericException(Defs.USER_NOT_FOUND);
     }
 
     @Override
-    public CustomUserDto updateUserById(Long id, CustomUserDto employeeBean) throws GenericException{
+    public CustomUserDto updateUserById(Long id, CustomUserDto customUserDto) throws GenericException{
+        Optional<CustomUser> loggedInCustomUser = customUserRepository.getLoggedInCustomUser();
+        if(loggedInCustomUser.isPresent() && !loggedInCustomUser.get().getId().equals(id)){
+            throw new GenericException(Defs.NO_PERMISSION_TO_UPDATE);
+        }
+
         Optional<CustomUser> optionalUser = customUserRepository.findById(id);
-        if(!optionalUser.isPresent()) throw new GenericException(Defs.USER_NOT_FOUND);
-        return null;
+        if(!optionalUser.isPresent() || optionalUser.get().getStatus().equals(false)) throw new GenericException(Defs.USER_NOT_FOUND);
+
+        CustomUser customUser = optionalUser.get();
+        if(!Utils.isNullOrEmpty(customUserDto.getFirstName())){
+            customUser.setFirstName(customUserDto.getFirstName());
+        }
+        if(!Utils.isNullOrEmpty(customUserDto.getLastName())){
+            customUser.setLastName(customUserDto.getLastName());
+        }
+        customUser = customUserRepository.save(customUser);
+
+        Utils.copyProperty(customUser, customUserDto);
+        return customUserDto;
     }
 
     @Override
     public Page<CustomUser> getUserList(UserSearchCriteria criteria, @PageableDefault(value = 10) Pageable pageable) throws GenericException{
+        Optional<CustomUser> loggedInCustomUser = customUserRepository.getLoggedInCustomUser();
+        Long id = null;
+        if(loggedInCustomUser.isPresent()){
+            id = loggedInCustomUser.get().getId();
+        }
+
         Page<CustomUser> userPage = customUserRepository.findAll(
-                UserSearchSpecifications.withId(criteria.getId())
+                UserSearchSpecifications.withId(id==null ? criteria.getId() : id)
                         .and(UserSearchSpecifications.withFirstName(criteria.getFirstName()))
                         .and(UserSearchSpecifications.withLastName(criteria.getLastName()))
-                        .and(UserSearchSpecifications.withUsername(criteria.getUsername()))
                         .and(UserSearchSpecifications.withEmail(criteria.getEmail()))
                         .and(UserSearchSpecifications.withPhone(criteria.getPhone()))
+                        .and(UserSearchSpecifications.withStatus(true))
                 ,pageable
         );
-        return null;
+        return userPage;
     }
 
     @Override
     public Boolean deleteUserById(Long id) throws GenericException{
+        Optional<CustomUser> loggedInCustomUser = customUserRepository.getLoggedInCustomUser();
         Optional<CustomUser> optionalUser = customUserRepository.findById(id);
+        if(loggedInCustomUser.isPresent() && optionalUser.isPresent() && !loggedInCustomUser.get().getId().equals(optionalUser.get().getId())){
+            throw new GenericException(Defs.NO_PERMISSION_TO_DELETE);
+        }
         if(!optionalUser.isPresent()) throw new GenericException(Defs.USER_NOT_FOUND);
 
+        CustomUser customUser = optionalUser.get();
+        customUser.setStatus(false);
+        try {
+            customUser = customUserRepository.save(customUser);
+            User user = customUser.getOauthUser();
+            user.setEnabled(false);
+            userRepository.save(user);
+        }catch (Exception e){
+            throw new GenericException(Defs.EXCEPTION_OCCURRED_WHILE_SAVING_USER_INFO);
+        }
         return true;
     }
 }
